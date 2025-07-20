@@ -1,0 +1,71 @@
+import { useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+
+export default function PromptForge() {
+  const [form, setForm] = useState({
+    businessName: '',
+    industry: '',
+    style: '',
+    colors: '',
+    tone: '',
+    slogan: '',
+    designType: 'logo'
+  });
+  const [prompt, setPrompt] = useState('');
+
+  const generatePrompt = () => {
+    const { businessName, industry, style, colors, tone, slogan, designType } = form;
+    const sloganText = slogan ? ` The slogan is: "${slogan}".` : '';
+
+    const output = `Design a ${style}, ${tone} ${designType} for a ${industry} business called "${businessName}". Use colors like ${colors}.${sloganText}`;
+    setPrompt(output);
+  };
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto space-y-6">
+      <h1 className="text-3xl font-bold">PromptForge: Small Biz Branding Prompts</h1>
+
+      <Card>
+        <CardContent className="space-y-4 p-4">
+          <Input placeholder="Business Name" value={form.businessName} onChange={e => setForm({ ...form, businessName: e.target.value })} />
+          <Input placeholder="Industry or Type (e.g., bakery, salon)" value={form.industry} onChange={e => setForm({ ...form, industry: e.target.value })} />
+          <Input placeholder="Style (e.g., modern, vintage)" value={form.style} onChange={e => setForm({ ...form, style: e.target.value })} />
+          <Input placeholder="Preferred Colors (e.g., blue and white)" value={form.colors} onChange={e => setForm({ ...form, colors: e.target.value })} />
+          <Input placeholder="Tone (e.g., friendly, professional)" value={form.tone} onChange={e => setForm({ ...form, tone: e.target.value })} />
+          <Input placeholder="Optional Slogan" value={form.slogan} onChange={e => setForm({ ...form, slogan: e.target.value })} />
+
+          <div>
+            <label className="block mb-1 font-medium">Choose an item to be generated</label>
+            <Select value={form.designType} onValueChange={value => setForm({ ...form, designType: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Design Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="logo">Logo</SelectItem>
+                <SelectItem value="business card">Business Card</SelectItem>
+                <SelectItem value="t-shirt">T-Shirt</SelectItem>
+                <SelectItem value="car magnet">Car Magnet</SelectItem>
+                <SelectItem value="coffee mug">Coffee Mug</SelectItem>
+                <SelectItem value="poster">Poster</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button onClick={generatePrompt}>Generate Prompt</Button>
+        </CardContent>
+      </Card>
+
+      {prompt && (
+        <div className="bg-gray-100 p-4 rounded-xl shadow">
+          <h2 className="text-xl font-semibold mb-2">Generated Prompt</h2>
+          <Textarea value={prompt} onChange={e => setPrompt(e.target.value)} rows={5} />
+          <Button className="mt-2" onClick={() => navigator.clipboard.writeText(prompt)}>Copy to Clipboard</Button>
+        </div>
+      )}
+    </div>
+  );
+}
